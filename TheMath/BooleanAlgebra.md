@@ -50,4 +50,3 @@ Furthermore, there are common laws as with standard mathimatics.
 
 <b>De Morgans Law</b>
 
-Left off ... https://www.coursera.org/learn/build-a-computer/lecture/BemaK/unit-1-1-boolean-logic @ 8: 12
