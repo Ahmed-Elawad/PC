@@ -1,0 +1,44 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/01/Mux4Way16.hdl
+
+/**
+ * 4-way 16-bit multiplexor:
+ * out = a if sel == 00
+ *       b if sel == 01
+ *       c if sel == 10
+ *       d if sel == 11
+*/
+
+// sel[0] & sel[1] = out[i] = d[i]
+// sel[0] & !sel[1] = out[i] = c[i]
+// !sel[0] & sel[1] = out[i] = b[i]
+// !sel[0] & !sel[1] = out[i] = a[i]
+
+
+/*
+matirix calculation against:
+       0  1
+    0 [a, b]
+    1 [c, d]
+
+Second(LSB) bit of sel[2] calculates the column
+first(MSB) bit of sel[2] calculates the row
+
+calculate the row through Mux16(a,c) = ac & Mux16(b,d)= db
+this resolves in two 16 bit arrays that are from the correct row
+
+finally calculate the column through Mux16(ac, bd) = output
+this (should) resolves in the row of the column
+*/
+
+CHIP Mux4Way16 {
+    IN a[16], b[16], c[16], d[16], sel[2];
+    OUT out[16];
+
+    PARTS:
+    Mux16(a=a, b=b, sel=sel[0], out=ab); // return the row for the column
+    Mux16(a=c, b=d, sel=sel[0], out=cd); // return the row for the column
+    Mux16(a=ab, b=cd, sel=sel[1], out=out); // return the column for the selected row
+}
