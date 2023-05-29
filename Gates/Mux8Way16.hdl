@@ -5,11 +5,42 @@
 
 /**
  * 8-way 16-bit multiplexor:
- * out = a if sel == 000
- *       b if sel == 001
- *       etc.
- *       h if sel == 111
+ * out = a if sel == 000 
+ *       b if sel == 001 
+ *       c if sel == 010 
+ *       d if sel == 011 
+ *       e if sel == 100 
+ *       f if sel == 101
+ *       g if sel == 110 
+ *       h if sel == 111 
  */
+
+/*
+Arrangement:
+Two groups for 4:
+    - first group: a, b, c, d
+    - second group: e, f, g, h
+
+Logical steps: not explicitly taken. Decided to use 4 way 16-bit bus mux
+    detemrine which group is selected
+        NOT(Nand(lsb)) == group 3
+
+four groups of two:
+    - first group: a, b
+    - second group: c, d
+    - third group: e, f
+    - fourth group: g, h
+
+Logical steps: 
+    Multiplexor decides which input to pass to the output
+    Pass the first group of 4 16-bit buses to the 4 way 16-bit multiplexor
+      - use the LSB and secondMSB to decide the selector value
+    Pass the second group of 16-bit buses to the 4 way 16-bit multiplexor
+      - use the MSB and the LSB to decide the selected value
+    Pass the results of the two into the same 4 way 16-bit multiplexor
+      - use the secondMSB and the MSB to decide the selected value
+    Output the result
+*/
 
 CHIP Mux8Way16 {
     IN a[16], b[16], c[16], d[16],
@@ -18,5 +49,7 @@ CHIP Mux8Way16 {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    Mux4Way16(a=a, b=c, c=e, d=g, sel=sel[1..2], out=rowFilter1);
+    Mux4Way16(a=b, b=d, c=f, d=h, sel=sel[1..2], out=rowFilter2);
+    Mux16(a=rowFilter1, b=rowFilter2, sel=sel[0], out=out);
 }
