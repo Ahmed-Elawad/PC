@@ -99,6 +99,10 @@ And, Or, Not
 How were the logical functions derived? Were they based on the result of the table, or was it related to testing the inputs and their result?
 - thinking of NOR and Nand gates in particular. They get the result of the input and then do some logical mutation to it. So I'm assuming we wanted to get more out of the basic outputs to represent something.
 
+
+Why is it nearly impossible to determine what combination of expressions are the shortest or most efficient that are equivilant to the one derived? Or verify if the expression given is a constant 0 or 1?
+ 
+
 <br/>
 
 # References: 
