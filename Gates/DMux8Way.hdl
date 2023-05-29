@@ -1,0 +1,52 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/01/DMux8Way.hdl
+
+/**
+ * 8-way demultiplexor:
+ * {a, b, c, d, e, f, g, h} = {in, 0, 0, 0, 0, 0, 0, 0} if sel == 000
+ *                            {0, in, 0, 0, 0, 0, 0, 0} if sel == 001
+ *                            etc.
+ *                            {0, 0, 0, 0, 0, 0, 0, in} if sel == 111
+ */
+
+
+
+/*
+Logic:
+    MSB = sel[0]
+    SecondSB = sel[1]
+    LSB = sel[2]
+
+    4 groups of 2 or 2 groups of four(Dmux4Way)
+    1st group: MSB = 0, SecondSB = 0, LSB = 0
+    2nd group: MSB = 0, SecondSB = 1, LSB = 0(Xor)
+    3rd group: MSB = 1, SecondSB = 0, LSB = 0(Xor)
+    4th group: MSB = 1, SecondSB = 1, LSB = 0(And)
+
+    LSB consrols if input is passed to position 1 or two of the group
+    SecondSB and MSB control which group is passed to
+
+    NOT(NOT(MSB or SecondSB) AND LSB ) than a
+    NOT(NOT(MSB or SecondSB) AND LSB ) than b
+    NOT((Not(MSB) AND SecondSB) AND LSB) than c
+    NOT((Not(MSB) AND SecondSB) AND LSB) than  d; 
+    (MSB AND NOT(SecondSB)) AND NOT(LSB) than e
+    (MSB AND NOT(SecondSB)) AND LSB than f 
+    (MSB AND SecondSB) AND NOT(LSB) than g
+    (MSB AND SecondSB) AND NOT(LSB) than h
+*/
+
+CHIP DMux8Way {
+    IN in, sel[3];
+    OUT a, b, c, d, e, f, g, h;
+
+    PARTS:
+    // Put your code here:
+    Not(in=sel[0], out=NotMSB);
+    Not(in=sel[1], out=NotSecondSB);
+    Not(in=sel[2], out=NotLSB);
+    And(a=MSB, b=SecondSB, out=MSBAndSecondSB);
+    Not(in=MSBAndSecondSB, out=NotMSBAndSecondSB);
+}
