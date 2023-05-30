@@ -44,9 +44,5 @@ CHIP DMux8Way {
 
     PARTS:
     // Put your code here:
-    Not(in=sel[0], out=NotMSB);
-    Not(in=sel[1], out=NotSecondSB);
-    Not(in=sel[2], out=NotLSB);
-    And(a=MSB, b=SecondSB, out=MSBAndSecondSB);
-    Not(in=MSBAndSecondSB, out=NotMSBAndSecondSB);
+    
 }

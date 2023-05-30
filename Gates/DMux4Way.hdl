@@ -19,8 +19,8 @@
     Feed the column selection into a 16-bit dmux to determine the output pin
 
     Row selection: if sel[0] b, otherwise a, and also if !sel[0], then c, otherwise d => row
-       a c
-       b d
+       a b
+       c d
 
     Column selection:
 */
@@ -31,5 +31,5 @@ CHIP DMux4Way {
 
     PARTS:
     DMux(in=in, sel=sel[0], a=a, b=b);   
-    DMux(in=in, sel=sel[1], a=c, b=d);
+    DMux(in=in, sel=sel[0], a=c, b=d);   
 }
