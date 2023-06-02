@@ -20,3 +20,7 @@
         1. Main function
         2. helper functions
     4. Work through helpers
+
+# Binary Representation
+
+The binary/subtraction process is similar to the traditional addition 
