@@ -102,3 +102,46 @@ Mnemonics:
     - 0010 = r2
 
 Assembler: convert 
+
+# nmumonics vs binary
+
+An assembler takes the symbolic language and converts it to binary for the machine to execute. The translation is very closely tied to the hardware implementation of the machine.
+
+```
+Hack machine example
+
+Symbolic syntax: @value
+value is a non negative number at most 2^15 -1
+```
+
+Instruction | Symbol | Binary
+---| --- | ---
+A | @21 | 0000-0000-0001-0101
+c | dest = comp ; jump | 1110000000000000
+
+```
+A instruction notes:
+set the value of the A(Address) register to 1
+
+first bit specifies the op code: 0 = A instruction
+final bits represent the value: value = 21 (0001-0101)
+
+C instruction:
+dest = comp ; jump
+if the destination = the computation and the computation = 0 jump to the address registers location
+
+1st bit = op code
+'1' = c
+
+next two bits are unused
+'11' = unused
+
+next 7 bits specify the computation to be done:
+Bits that are passed to the alu to do the computation on the value in the A register
+
+
+the next 3 bits define the destination of the result
+
+the final 3 bits represent the jump condition
+
+```
