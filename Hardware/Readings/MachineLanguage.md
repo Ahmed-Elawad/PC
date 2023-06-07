@@ -64,6 +64,34 @@ I/O devices read and write some stream of bits to a register.
 - CPU needs a protocol to handle the input: Drivers
 - Memory mapping is a method of defining the kinds of interaction behaviors
 
+Items that are connected to the computer are generally defined as perephrial items:
+keyboard, mouse, monitor etc
+
+Essentially, bits are submitted to the computer which does some computation and routes the result to it's destination.
+
+Some physical memory is allocated on the device for mutating outputs to a periphrial device.
+
+```
+A basic display unit is a grid of pixals.
+To calculate the exact address we need to: 
+for a 256 * 512 b/w display
+
+We need 256 * 512 / 16 registers = 8,000
+
+for a 256(rows) by 512(columns) we have 32 registers per row
+
+To find the target row we do:
+ 32 * row
+
+to find the target register of the row we do:
+col/16
+
+Target_Register = 32 * row + col/16
+
+```
+
+To write to the screen we can use a screen chip other wise we need to provide the address relative to the entirety of the available memory - in RAM.
+
 # Flow control
 
 How to tell the hardware what operation to execute
@@ -145,3 +173,11 @@ the next 3 bits define the destination of the result
 the final 3 bits represent the jump condition
 
 ```
+
+In the CPU:
+D(ata) register: a single 16 bit value
+
+A register: can hold a data value or an address
+
+In RAM:
+M register: refers to the currently selected memory register
