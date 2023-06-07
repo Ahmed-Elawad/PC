@@ -29,7 +29,6 @@ D=M
 @R2
 M=M+D
 
-// decrement R3
 @R0
 D=M-1
 
