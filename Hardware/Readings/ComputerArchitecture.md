@@ -25,7 +25,7 @@ I'm wondering why we do it this way. Might be for simplicities sake, but what if
 
 Memory will contain Data memory and program memory. Data memory will contain data and will receive and output data. 
 
-Program memory will recieve addresses and output data either into the data bus or control bits
+Program memory will recieve addresses and output data either into the data bus or control bits.
 
 ## Data memory
 
@@ -116,4 +116,5 @@ The 6 'c'(4-9) bits determine the function the ALU will compute against the inpu
 The 'D'(10-12) bits determine the destination of the result(output)
 
 And the 'J'(13-15) bits are used to branch to(fetch) the next instruction
+- 
 

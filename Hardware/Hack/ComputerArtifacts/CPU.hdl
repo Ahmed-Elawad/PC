@@ -39,15 +39,37 @@ CHIP CPU {
         pc[15];          // address of next instruction
 
     PARTS:
-    Mux16(a=instruction, b=aluOut, out=muxOut);
-    Mux16(a=aluMux, b=inM, sel=instruction[12], out=aluIn);
-    ALU(x=aluIn, y=dataOut, zx=instruction[4], nx=instruction[5], zy=instruction[6], ny=instruction[7], f=instruction[8], no=instruction[9], out=aluOut, zr=zr, ng=ng);
+    Mux16(a=instruction, b=aluOut, out=ARegLoad, sel=instruction[15]);
 
-    ARegister(in=muxOut,load=instruction[13], out=aluMux, out=pcIn, out[0..15]=addressM); // need to confirm a register load bit
+    Mux(a=true, b=instruction[5], sel=instruction[15], out=loadA);
 
-    DRegister(in= aluOut,load=instruction[14],out=dataOut);
+    ARegister(in=ARegLoad, load=loadA, out[0..14]=addressM, out=aRegOut, out=pcLoadAddr);
 
-    // could be a jump based on alu zr, ng and instruction[15]
-    //// ???? pcLoad, pcInc
-    PC(in=pcIn,load=pcLoad,inc=pcInc,reset=reset, out=PC)
+    Mux(a=false, b=instruction[4], sel=instruction[15], out=loadD);
+    DRegister(in=aluOut, load=loadD, out=aluX);
+
+    // determine if we take the M or A input
+    Mux16(a=aRegOut, b=inM, out=aluY, sel=instruction[12]);
+
+    ALU(x=aluX, y=aluY, zx=instruction[11], nx=instruction[10], zy=instruction[9], ny=instruction[8], f=instruction[7], no=instruction[6], out[0..15]=outM, out=aluOut, zr=zr, ng=ng);
+    
+    And(a=instruction[15], b=instruction[3], out=writeM);
+    Or(a=zr, b=ng, out=zeroORnegative); // true if 0 or negative
+    Not(in=zeroORnegative, out=Positive); // true if positive
+
+    // Check jump conditions.
+    And(a=instruction[0], b=Positive, out=jmp1);
+    And(a=instruction[1], b=zr, out=jmp2);
+    And(a=instruction[2], b=ng, out=jmp3);
+
+    // Determine if a jump should take place.
+    Or(a=jmp1, b=jmp2, out=jmpres1);
+    Or(a=jmpres1, b=jmp3, out=jump);
+
+    // Do not jump on A-Instruction.
+    Mux(a=false, b=jump, sel=instruction[15], out=pcLoad);
+
+    // Increment PC unless reset or load commands are present.
+    // PC also outputs the next ROM address to read.
+    PC(in=aRegOut, load=pcLoad, inc=true, reset=reset, out[0..14]=pc);
 }
