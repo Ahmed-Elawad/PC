@@ -50,7 +50,7 @@ public:
     std::string symbol()
     {
         if (current_command_type == CommandType::C_COMMAND)
-            return nullptr;
+            return "NULL";
 
         if (current_command_type == CommandType::A_COMMAND)
         {
@@ -58,19 +58,35 @@ public:
         }
 
         if (current_command_type == CommandType::L_COMMAND)
-            return nullptr;
+            return "NULL";
 
-        return nullptr;
+        return "NULL";
     };
 
-    std::string dest(){
+    std::string dest()
+    {
         // dest=comp;jump
-        if (current_command_type != CommandType::C_COMMAND) return nullptr;
-        return current_command.substr(0, current_command.find("=") - 1);
+        if (current_command_type != CommandType::C_COMMAND)
+            return "NULL";
+        return current_command.substr(0, current_command.find("="));
     };
 
-    void comp();
-    void jump();
+    std::string comp()
+    {
+        if (current_command_type != CommandType::C_COMMAND)
+            return "NULL";
+            // mmight not always have a jump
+        return current_command.substr(current_command.find('=') + 1, current_command.find(';') - 2);
+    };
+
+    std::string jump()
+    {
+        if (current_command_type != CommandType::C_COMMAND)
+            return "NULL";
+        // define some constant to indicate an non found value
+        if (current_command.find(';') > current_command.length()) return nullptr;
+        return current_command.substr(current_command.find(';') + 1, current_command.length() - 1);
+    };
 
     // cleanup
     ~Parser()
