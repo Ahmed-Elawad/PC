@@ -79,13 +79,13 @@ public:
         a_Table.insert({"D|M", "1"});
         // poplate the jump_table table
         jump_table.insert({"NULL", "000"});
-        jump_table.insert({"M", "001"});
-        jump_table.insert({"D", "010"});
-        jump_table.insert({"A", "100"});
-        jump_table.insert({"DM", "011"});
-        jump_table.insert({"AM", "101"});
-        jump_table.insert({"AD", "110"});
-        jump_table.insert({"ADM", "111"});
+        jump_table.insert({"JGT", "001"});
+        jump_table.insert({"JEQ", "010"});
+        jump_table.insert({"JGE", "100"});
+        jump_table.insert({"JLT", "011"});
+        jump_table.insert({"JNE", "101"});
+        jump_table.insert({"JLE", "110"});
+        jump_table.insert({"JMP", "111"});
     }
 
     std::string dest(std::string &destCode)

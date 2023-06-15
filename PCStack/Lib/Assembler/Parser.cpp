@@ -92,7 +92,7 @@ public:
 
         int end = current_command.find(';');
         int start = current_command.find('=');
-        if (end == std::string::npos) return "NULL";
+        if (end == std::string::npos) end = current_command.length();
 
         return current_command.substr(start + 1, end - 2);
     };

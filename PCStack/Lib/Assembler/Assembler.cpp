@@ -29,6 +29,6 @@ int main() {
 
     // combine the instruction
     // don't always want to construct if there is no c instruction
-    std::string c_instruction = "111" + codeTables.aCode(comp) + codeTables.dest(dest) + codeTables.comp(comp) + codeTables.jump(jmp);
+    std::string c_instruction = "111" + codeTables.aCode(comp) +  codeTables.comp(comp) + codeTables.dest(dest) + codeTables.jump(jmp);
     return 0;
 }
