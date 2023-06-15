@@ -14,7 +14,8 @@ public:
         L_COMMAND
     };
 
-    bool hasMoreCommands() {
+    bool hasMoreCommands()
+    {
         return !readFromFile.eof();
     }
 
@@ -49,7 +50,6 @@ public:
         if (current_command_type == CommandType::C_COMMAND)
             return "NULL";
 
-
         if (current_command_type == CommandType::L_COMMAND)
             return "NULL";
 
@@ -60,17 +60,26 @@ public:
             // convert the string to an int
             // convert the int to it's binary form string
             // couple of ways to do this. Read the string from right to left and do bitshifts, use a library
-            std::string symbol = current_command.substr(1, current_command.length() - 1);
+
+            // could be @R1
+            int start = current_command.find('R');
+            if (start == std::string::npos) start = 1;
+            else start = 2;
+            // should test the bound
+            std::string symbol = current_command.substr(start, current_command.length() - 1);
             int intSymbol = std::stoi(symbol); // what happens if it isn't an int??
             // do the loop to build the result
             std::string bit_form = "";
-            while (intSymbol != 0) {
+            while (intSymbol != 0)
+            {
                 int remainder = intSymbol % 2;
-                if (remainder != 0) {
+                if (remainder != 0)
+                {
                     bit_form = "1" + bit_form;
                     intSymbol--;
                 }
-                else bit_form = "0" + bit_form;
+                else
+                    bit_form = "0" + bit_form;
                 intSymbol /= 2;
             }
             return bit_form;
@@ -78,7 +87,6 @@ public:
 
         return "NULL";
     };
-
 
     std::string dest()
     {
@@ -95,7 +103,8 @@ public:
 
         int end = current_command.find(';');
         int start = current_command.find('=');
-        if (end == std::string::npos) end = current_command.length();
+        if (end == std::string::npos)
+            end = current_command.length();
 
         return current_command.substr(start + 1, end - 2);
     };
@@ -106,7 +115,8 @@ public:
             return "NULL";
 
         int start = current_command.find(';');
-        if (start == std::string::npos) return "NULL";
+        if (start == std::string::npos)
+            return "NULL";
 
         return current_command.substr(start + 1, current_command.length() - 1);
     };
