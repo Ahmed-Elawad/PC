@@ -5,30 +5,44 @@
 #include "Parser.cpp"
 #include "Code.cpp"
 
-int main() {
+int main()
+{
     // open the input file
-    std::string fileName{"testFile.asm"};
-    
-    Parser parser{fileName};
+    std::string read_file_Name{"testFile.asm"};
+    std::string write_file_Name{"testFile.hack"};
+
+    Parser parser{read_file_Name};
     Code codeTables;
+    std::fstream outputFile{write_file_Name, outputFile.out};
 
-    // start parsing
-    parser.advance(); // advance to the first line
-    
-    // define the A instruction code
-    std::string symbol = parser.symbol();
-    size_t n = 16;
-    int precision = n - std::min(n, symbol.size());
-    std::string a_instruction = std::string(precision, '0').append(symbol);
-    // a_instruction : 0000000000000016 need to convert to binary
+    std::string instruction;
+    while (parser.hasMoreCommands())
+    {
+        parser.advance(); // advance to the first line
 
-    parser.advance(); // advance to the c command
-    std::string comp =  parser.comp();
-    std::string dest =  parser.dest();
-    std::string jmp =  parser.jump();
+        // define the A instruction code
+        // get command
+        if (parser.commandType() == parser.A_COMMAND)
+        {
+            std::string symbol = parser.symbol();
+            size_t n = 16;
+            int precision = n - std::min(n, symbol.size());
+            instruction = std::string(precision, '0').append(symbol);
+        }
+        else if (parser.commandType() == parser.C_COMMAND)
+        {
+            std::string comp = parser.comp();
+            std::string dest = parser.dest();
+            std::string jmp = parser.jump();
+            instruction = "111" + codeTables.aCode(comp) + codeTables.comp(comp) + codeTables.dest(dest) + codeTables.jump(jmp);
+        }
+        else if (parser.commandType() == parser.L_COMMAND)
+        {
+        }
 
-    // combine the instruction
-    // don't always want to construct if there is no c instruction
-    std::string c_instruction = "111" + codeTables.aCode(comp) +  codeTables.comp(comp) + codeTables.dest(dest) + codeTables.jump(jmp);
+        outputFile << instruction << std::endl;
+        // write to the line in the output file
+    }
+
     return 0;
 }

@@ -14,10 +14,13 @@ public:
         L_COMMAND
     };
 
+    bool hasMoreCommands() {
+        return !readFromFile.eof();
+    }
 
     void advance()
     {
-        if (readFromFile.eof())
+        if (!hasMoreCommands())
             return;
 
         std::getline(readFromFile, current_command, '\n');
