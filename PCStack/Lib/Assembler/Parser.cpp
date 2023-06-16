@@ -34,6 +34,10 @@ public:
         {
             current_command_type = CommandType::A_COMMAND;
         }
+        else if (current_command[0] == '(' && current_command[(current_command.size() - 1)] == ')')
+        {
+            current_command_type = CommandType::L_COMMAND;
+        }
         else
         {
             current_command_type = CommandType::C_COMMAND;
@@ -51,7 +55,9 @@ public:
             return "NULL";
 
         if (current_command_type == CommandType::L_COMMAND)
-            return "NULL";
+        {
+            return current_command.substr(1, current_command.length() - 2);
+        }
 
         if (current_command_type == CommandType::A_COMMAND)
         {
@@ -61,32 +67,46 @@ public:
             // convert the int to it's binary form string
             // couple of ways to do this. Read the string from right to left and do bitshifts, use a library
 
-            // could be @R1
+            // could be @R1, @someSymbol, @Rsomesymbol <- handle all
             int start = current_command.find('R');
-            if (start == std::string::npos) start = 1;
-            else start = 2;
+            if (start == std::string::npos)
+                start = 1;
+            else
+                start = 2;
             // should test the bound
             std::string symbol = current_command.substr(start, current_command.length() - 1);
-            int intSymbol = std::stoi(symbol); // what happens if it isn't an int??
-            // do the loop to build the result
-            std::string bit_form = "";
-            while (intSymbol != 0)
-            {
-                int remainder = intSymbol % 2;
-                if (remainder != 0)
-                {
-                    bit_form = "1" + bit_form;
-                    intSymbol--;
-                }
-                else
-                    bit_form = "0" + bit_form;
-                intSymbol /= 2;
-            }
-            return bit_form;
+            int int_symbol = std::stoi(symbol); // what happens if it isn't an int??
+            return convertIntToStringBits(int_symbol);
         }
 
         return "NULL";
     };
+
+    std::string convertIntToStringBits(int int_symbol)
+    {
+        // do the loop to build the result
+        std::string bit_form = "";
+        while (int_symbol != 0)
+        {
+            int remainder = int_symbol % 2;
+            if (remainder != 0)
+            {
+                bit_form = "1" + bit_form;
+                int_symbol--;
+            }
+            else
+                bit_form = "0" + bit_form;
+            int_symbol /= 2;
+        }
+        return bit_form;
+    }
+
+    void padWithZeros(std::string &str, std::string &instruction)
+    {
+        size_t n = 16;
+        int precision = n - std::min(n, str.size());
+        instruction = std::string(precision, '0').append(str);
+    }
 
     std::string dest()
     {
@@ -120,6 +140,12 @@ public:
 
         return current_command.substr(start + 1, current_command.length() - 1);
     };
+
+    void backToTop()
+    {
+        readFromFile.clear();
+        readFromFile.seekg(0);
+    }
 
     // cleanup
     ~Parser()
