@@ -40,7 +40,7 @@ public:
     {
         bool uses_reference_char = current_command[0] == '@';
         bool defines_variable = current_command[0] == '(' && current_command[(current_command.size() - 1)] == ')';
-    
+
         if (!uses_reference_char && !defines_variable)
         {
             current_command_type = CommandType::C_COMMAND;
@@ -125,39 +125,91 @@ public:
     {
         // dest=comp;jump
         if (current_command_type != CommandType::C_COMMAND)
-            return "NULL";
-        return current_command.substr(0, current_command.find("="));
+            return NULL_STRING;
+        // loop the line from beggining to = and construct the dest clause
+        int equals_pos = current_command.find("=");
+        int semicolon_pos = current_command.find(";");
+
+        if (equals_pos == std::string::npos)
+            return NULL_STRING;
+
+        int end;
+        if (semicolon_pos != std::string::npos)
+            end = semicolon_pos;
+        else
+            end = 1;
+
+        return constructResultString(0, end, false);
     };
 
     std::string comp()
     {
         if (current_command_type != CommandType::C_COMMAND)
-            return "NULL";
+            return NULL_STRING;
 
-        int end = current_command.find(';');
-        int start = current_command.find('=');
-        if (end == std::string::npos)
+        // loop the line from beggining to = and construct the dest clause
+        int equals_pos = current_command.find("=");
+        int semicolon_pos = current_command.find(";");
+
+        int start;
+        if (equals_pos != std::string::npos)
+            start = equals_pos + 1;
+        else
+            start = 0;
+
+        int end;
+        // if no ; comp goes till end
+        if (semicolon_pos != std::string::npos)
+            end = semicolon_pos;
+        else
             end = current_command.length();
 
-        return current_command.substr(start + 1, end - 2);
+        return constructResultString(start, end, false);
     };
+
+    std::string constructResultString(int start, int end, bool checkingJmpCommand) {
+        std::string result_string = "";
+
+         for (int i = start; i < end; i++)
+        {
+            char current_char = current_command[i];
+            if (!checkingJmpCommand && current_char == ';' || current_char == '=')
+                break;
+
+            if (current_char == ' ')
+                continue;
+
+            result_string += current_char;
+        }
+
+        return result_string;
+    }
 
     std::string jump()
     {
         if (current_command_type != CommandType::C_COMMAND)
-            return "NULL";
+            return NULL_STRING;
 
-        int start = current_command.find(';');
-        if (start == std::string::npos)
-            return "NULL";
+        int semicolon_pos = current_command.find(";");
 
-        return current_command.substr(start + 1, current_command.length() - 1);
+        int start;
+        if (semicolon_pos != std::string::npos)
+            start = semicolon_pos + 1;
+        else
+            return NULL_STRING;
+
+        return constructResultString(start, current_command.length(), true);
     };
 
     void backToTop()
     {
         readFromFile.clear();
         readFromFile.seekg(0);
+    }
+
+    void closeFile()
+    {
+        readFromFile.close();
     }
 
     // cleanup
@@ -167,6 +219,7 @@ public:
     };
 
 private:
+    std::string NULL_STRING = "NULL";
     std::string current_command;
     std::fstream readFromFile;
     CommandType current_command_type;
