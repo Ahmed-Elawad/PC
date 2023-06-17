@@ -5,13 +5,16 @@
 #include "Parser.cpp"
 #include "Code.cpp"
 #include "Symbols.cpp"
-#include "Assembler_test.cpp"
 
-int main()
+int main(int argc, char** argv)
 {
-    // open the input file
-    std::string read_file_Name{"testFile.asm"};
-    std::string write_file_Name{"outputFile.hack"};
+    // limit input items
+    std::string file_name = argv[1];
+
+    std::string read_file_Name{file_name};
+    // remove asm
+    std::string output_filename = file_name.substr(0, file_name.find('.'))+ ".hack";
+    std::string write_file_Name{output_filename};
 
     Parser parser{read_file_Name};
     Code codeTables;
@@ -26,10 +29,13 @@ int main()
     {
         parser.advance(); // advance to the first line
 
+        if (parser.commandType() == parser.COMMENT)
+            continue;
         if (parser.commandType() == parser.L_COMMAND)
         {
             std::string symb = parser.symbol();
             symbolsTables.addEntry(symb, lineCounter);
+            continue;
         }
         lineCounter++;
     }
@@ -40,6 +46,8 @@ int main()
     {
         parser.advance(); // advance to the first line
 
+        if (parser.commandType() == parser.COMMENT)
+            continue;
         if (parser.commandType() == parser.C_COMMAND)
         {
             std::string comp = parser.comp(); // not correct when: D;JGT, 0;JMP
@@ -49,32 +57,29 @@ int main()
         }
         else
         {
-            std::string symb = parser.symbol();         
-            if (symbolsTables.contains(symb))
+            std::string symb = parser.symbol();
+            int symbol_addres;
+            if (parser.commandType() == parser.A_COMMAND)
             {
-                int symbol_addres = symbolsTables.getAddress(symb);
+
+            } else  if (symbolsTables.contains(symb))
+            {
+                symbol_addres = symbolsTables.getAddress(symb);
                 symb = parser.convertIntToStringBits(symbol_addres);
             }
+            else
+            {
+                symbol_addres = symbolsTables.getNextAddress();
+                symbolsTables.addEntry(symb, symbol_addres);
+                symb = parser.convertIntToStringBits(symbol_addres);
+            }
+
+            //std::cout << symb << std::endl;
             parser.padWithZeros(symb, instruction);
         }
         outputFile << instruction << std::endl;
     }
     outputFile.close();
     parser.closeFile();
-    
-    std::fstream output_file{"outputFile.hack", output_file.in};
-    std::fstream test_file{"testFile.hack", test_file.in};
-
-    lineCounter = 0;
-
-    while (!test_file.eof()) {
-        std::string expected_command = "";
-        std::string actual_command = "";
-        std::getline(test_file, expected_command, '\n');
-        std::getline(output_file, actual_command, '\n');
-        assertm(expected_command ==  actual_command, "File lines not matched");
-        lineCounter++;
-    }
-
     return 0;
 }
