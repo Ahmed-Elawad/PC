@@ -39,39 +39,25 @@ int main()
     {
         parser.advance(); // advance to the first line
 
-        // define the A instruction code
-        // get command
-        if (parser.commandType() == parser.A_COMMAND)
+        if (parser.commandType() == parser.C_COMMAND)
         {
-            std::string symb = parser.symbol();
-            parser.padWithZeros(symb, instruction);
-        }
-        else if (parser.commandType() == parser.C_COMMAND)
-        {
-            std::string comp = parser.comp();
+            std::string comp = parser.comp(); // not correct when: D;JGT, 0;JMP
             std::string dest = parser.dest();
             std::string jmp = parser.jump();
             instruction = "111" + codeTables.aCode(comp) + codeTables.comp(comp) + codeTables.dest(dest) + codeTables.jump(jmp);
         }
-        else if (parser.commandType() == parser.L_COMMAND)
+        else
         {
-            std::string symbol = parser.symbol();
-            std::cout << symbol << std::endl;
-            if (symbolsTables.contains(symbol))
+            std::string symb = parser.symbol();         
+            if (symbolsTables.contains(symb))
             {
-                int symbol_addres = symbolsTables.getAddress(symbol);
-                std::cout << symbol_addres << std::endl;
-                std::string symbol_bits = parser.convertIntToStringBits(symbol_addres);
-                std::cout << symbol_bits << std::endl;
-                parser.padWithZeros(symbol_bits, instruction);
-                std::cout << symbol_bits << std::endl;
+                int symbol_addres = symbolsTables.getAddress(symb);
+                symb = parser.convertIntToStringBits(symbol_addres);
             }
-            std::cout << symbol << std::endl;
+            parser.padWithZeros(symb, instruction);
         }
+        outputFile << instruction << std::endl;
     }
-
-    outputFile << instruction << std::endl;
-    // write to the line in the output file
 
     return 0;
 }

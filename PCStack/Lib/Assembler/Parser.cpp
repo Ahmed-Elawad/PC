@@ -28,20 +28,33 @@ public:
         setCommantType();
     };
 
+    bool isNumber(std::string str)
+    {
+        for (int i = 1; i < str.length(); i++)
+            if (isdigit(str[i]) == false)
+                return false;
+        return true;
+    }
+
     void setCommantType()
     {
-        if (current_command[0] == '@')
-        {
-            current_command_type = CommandType::A_COMMAND;
-        }
-        else if (current_command[0] == '(' && current_command[(current_command.size() - 1)] == ')')
-        {
-            current_command_type = CommandType::L_COMMAND;
-        }
-        else
+        bool uses_reference_char = current_command[0] == '@';
+        bool defines_variable = current_command[0] == '(' && current_command[(current_command.size() - 1)] == ')';
+    
+        if (!uses_reference_char && !defines_variable)
         {
             current_command_type = CommandType::C_COMMAND;
+            return;
         }
+
+        if (!defines_variable && uses_reference_char && isNumber(current_command))
+        {
+            current_command_type = CommandType::A_COMMAND;
+            return;
+        }
+
+        current_command_type = CommandType::L_COMMAND;
+        return;
     }
 
     CommandType commandType()
