@@ -5,12 +5,13 @@
 #include "Parser.cpp"
 #include "Code.cpp"
 #include "Symbols.cpp"
+#include "Assembler_test.cpp"
 
 int main()
 {
     // open the input file
     std::string read_file_Name{"testFile.asm"};
-    std::string write_file_Name{"testFile.hack"};
+    std::string write_file_Name{"outputFile.hack"};
 
     Parser parser{read_file_Name};
     Code codeTables;
@@ -57,6 +58,22 @@ int main()
             parser.padWithZeros(symb, instruction);
         }
         outputFile << instruction << std::endl;
+    }
+    outputFile.close();
+    parser.closeFile();
+    
+    std::fstream output_file{"outputFile.hack", output_file.in};
+    std::fstream test_file{"testFile.hack", test_file.in};
+
+    lineCounter = 0;
+
+    while (!test_file.eof()) {
+        std::string expected_command = "";
+        std::string actual_command = "";
+        std::getline(test_file, expected_command, '\n');
+        std::getline(output_file, actual_command, '\n');
+        assertm(expected_command ==  actual_command, "File lines not matched");
+        lineCounter++;
     }
 
     return 0;
