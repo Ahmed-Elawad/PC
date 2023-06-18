@@ -7,117 +7,75 @@ class Code
 public:
     Code()
     {
-        // poplate the dest table
         dest_table.insert({"NULL", "000"});
         dest_table.insert({"M", "001"});
         dest_table.insert({"D", "010"});
-        dest_table.insert({"DM", "011"});
+        dest_table.insert({"MD", "011"});
         dest_table.insert({"A", "100"});
         dest_table.insert({"AM", "101"});
         dest_table.insert({"AD", "110"});
-        dest_table.insert({"ADM", "111"});
-        // poplate the comp table 
-        comp_Table.insert({"NULL", "000000"});
-        comp_Table.insert({"0", "101010"});
-        comp_Table.insert({"1", "111111"});
-        comp_Table.insert({"-1", "111010"});
-        comp_Table.insert({"D", "001100"});
-        comp_Table.insert({"A", "110000"});
-        comp_Table.insert({"M", "110000"});
-        comp_Table.insert({"!D", "001101"});
-        comp_Table.insert({"!A", "110001"});
-        comp_Table.insert({"!M", "110001"});
-        comp_Table.insert({"-D", "001111"});
-        comp_Table.insert({"-A", "110011"});
-        comp_Table.insert({"-M", "110011"});
-        comp_Table.insert({"D+1", "011111"});
-        comp_Table.insert({"A+1", "110111"});
-        comp_Table.insert({"M+1", "110111"});
-        comp_Table.insert({"D-1", "001110"});
-        comp_Table.insert({"A-1", "110010"});
-        comp_Table.insert({"M-1", "110010"});
-        comp_Table.insert({"D+A", "000010"});
-        comp_Table.insert({"D+M", "000010"});
-        comp_Table.insert({"D-A", "010011"});
-        comp_Table.insert({"D-M", "010011"});
-        comp_Table.insert({"A-D", "000111"});
-        comp_Table.insert({"M-D", "000111"});
-        comp_Table.insert({"D&A", "000000"});
-        comp_Table.insert({"D&M", "000000"});
-        comp_Table.insert({"D|A", "010101"});
-        comp_Table.insert({"D|M", "010101"});
-        comp_Table.insert({"NULL", "000000"});
-        // and redundantly an a table. define some tuple later
-        a_Table.insert({"NULL", "0"});
-        a_Table.insert({"0", "0"});
-        a_Table.insert({"1", "0"});
-        a_Table.insert({"-1", "0"});
-        a_Table.insert({"D", "0"});
-        a_Table.insert({"A", "0"});
-        a_Table.insert({"M", "1"});
-        a_Table.insert({"!D", "0"});
-        a_Table.insert({"!A", "0"});
-        a_Table.insert({"!M", "1"});
-        a_Table.insert({"-D", "0"});
-        a_Table.insert({"-A", "0"});
-        a_Table.insert({"-M", "1"});
-        a_Table.insert({"D+1", "0"});
-        a_Table.insert({"A+1", "0"});
-        a_Table.insert({"M+1", "1"});
-        a_Table.insert({"D-1", "0"});
-        a_Table.insert({"A-1", "0"});
-        a_Table.insert({"M-1", "1"});
-        a_Table.insert({"D+A", "0"});
-        a_Table.insert({"D+M", "1"});
-        a_Table.insert({"D-A", "0"});
-        a_Table.insert({"D-M", "1"});
-        a_Table.insert({"A-D", "0"});
-        a_Table.insert({"M-D", "1"});
-        a_Table.insert({"D&A", "0"});
-        a_Table.insert({"D&M", "1"});
-        a_Table.insert({"D|A", "0"});
-        a_Table.insert({"D|M", "1"});
-        // poplate the jump_table table
+        dest_table.insert({"AMD", "111"});
+
+        dest_table.insert({"NULL", "0000000"});
+        comp_Table.insert({"0", "0101010"});
+        comp_Table.insert({"1", "0111111"});
+        comp_Table.insert({"-1", "0111010"});
+        comp_Table.insert({"D", "0001100"});
+        comp_Table.insert({"A", "0110000"});
+        comp_Table.insert({"!D", "0001101"});
+        comp_Table.insert({"!A", "0110001"});
+        comp_Table.insert({"-D", "0001111"});
+        comp_Table.insert({"-A", "0110011"});
+        comp_Table.insert({"D+1", "0011111"});
+        comp_Table.insert({"A+1", "0110111"});
+        comp_Table.insert({"D-1", "0001110"});
+        comp_Table.insert({"A-1", "0110010"});
+        comp_Table.insert({"D+A", "0000010"});
+        comp_Table.insert({"D-A", "0010011"});
+        comp_Table.insert({"A-D", "0000111"});
+        comp_Table.insert({"D&A", "0000000"});
+        comp_Table.insert({"D|A", "0010101"});
+        comp_Table.insert({"M", "1110000"});
+        comp_Table.insert({"!M", "1110001"});
+        comp_Table.insert({"-M", "1110011"});
+        comp_Table.insert({"M+1", "1110111"});
+        comp_Table.insert({"M-1", "1110010"});
+        comp_Table.insert({"D+M", "1000010"});
+        comp_Table.insert({"D-M", "1010011"});
+        comp_Table.insert({"M-D", "1000111"});
+        comp_Table.insert({"D&M", "1000000"});
+        comp_Table.insert({"D|M", "1010101"});
+
         jump_table.insert({"NULL", "000"});
         jump_table.insert({"JGT", "001"});
         jump_table.insert({"JEQ", "010"});
-        jump_table.insert({"JGE", "100"});
-        jump_table.insert({"JLT", "011"});
+        jump_table.insert({"JGE", "011"});
+        jump_table.insert({"JLT", "100"});
         jump_table.insert({"JNE", "101"});
         jump_table.insert({"JLE", "110"});
         jump_table.insert({"JMP", "111"});
+
+       
     }
 
     std::string dest(std::string &destCode)
     {
-        if (dest_table.find(destCode) != dest_table.end())
-            return dest_table[destCode];
-
-        return dest_table["NULL"];
+        return dest_table[destCode];
     }
 
     std::string comp(std::string &compCode)
     {
-        if (comp_Table.find(compCode) != comp_Table.end())
-            return comp_Table[compCode];
-
-        return comp_Table["NULL"];
+        return comp_Table[compCode];
     }
 
     std::string aCode(std::string &compCode)
     {
-        if (a_Table.find(compCode) != a_Table.end())
-            return a_Table[compCode];
-
-        return a_Table["NULL"];
+        return a_Table[compCode];
     }
 
     std::string jump(std::string &jumpCode)
     {
-        if (jump_table.find(jumpCode) != jump_table.end())
-            return jump_table[jumpCode];
-
-        return jump_table["NULL"];
+        return jump_table[jumpCode];
     }
 
     void symbolLocation(std::string &symbol)
