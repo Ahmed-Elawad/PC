@@ -1,85 +1,81 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <bitset>
 // import Parser
+
 #include "Parser.cpp"
 #include "Code.cpp"
 #include "Symbols.cpp"
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
-    // limit input items
-    std::string file_name = argv[1];
+    std::string fileName = argv[1];
+    std::string outputFileName = fileName.substr(0, fileName.find(".asm")) + ".hack";
+    std::fstream outputFile{outputFileName, std::ios::out};
 
-    std::string read_file_Name{file_name};
-    // remove asm
-    std::string output_filename = file_name.substr(0, file_name.find('.'))+ ".hack";
-    std::string write_file_Name{output_filename};
+    Parser parser{fileName};
+    Code codeTable;
+    Symbols symbolsTable;
 
-    Parser parser{read_file_Name};
-    Code codeTables;
-    Symbols symbolsTables;
-    std::fstream outputFile{write_file_Name, outputFile.out};
-
-    std::string instruction;
     int lineCounter = 0;
-
-    // generate symbols table
+    // generate the symbols table
     while (parser.hasMoreCommands())
     {
-        parser.advance(); // advance to the first line
-
-        if (parser.commandType() == parser.COMMENT)
-            continue;
+        parser.advance();
+        parser.setCommandType();
         if (parser.commandType() == parser.L_COMMAND)
         {
-            std::string symb = parser.symbol();
-            symbolsTables.addEntry(symb, lineCounter);
+            std::string symbol = parser.symbol();
+            symbolsTable.addEntry(symbol, lineCounter);
             continue;
         }
+        if (parser.commandType() == parser.SKIP_COMMAND)
+            continue;
         lineCounter++;
     }
 
-    parser.backToTop();
+    std::cout << std::endl
+              << std::endl;
 
+    parser.toTop();
+    std::string instruction;
     while (parser.hasMoreCommands())
     {
-        parser.advance(); // advance to the first line
-
-        if (parser.commandType() == parser.COMMENT)
+        parser.advance();
+        parser.setCommandType();
+        if (parser.commandType() == parser.L_COMMAND || parser.commandType() == parser.SKIP_COMMAND)
             continue;
-        if (parser.commandType() == parser.C_COMMAND)
-        {
-            std::string comp = parser.comp(); // not correct when: D;JGT, 0;JMP
-            std::string dest = parser.dest();
-            std::string jmp = parser.jump();
-            instruction = "111" + codeTables.aCode(comp) + codeTables.comp(comp) + codeTables.dest(dest) + codeTables.jump(jmp);
-        }
-        else
-        {
-            std::string symb = parser.symbol();
-            int symbol_addres;
-            if (parser.commandType() == parser.A_COMMAND)
-            {
 
-            } else  if (symbolsTables.contains(symb))
+        if (parser.commandType() == parser.A_COMMAND)
+        {
+            std::string symbol = parser.symbol();
+            // if the table contains the symbol then we can just use it
+            if (symbolsTable.contains(symbol))
             {
-                symbol_addres = symbolsTables.getAddress(symb);
-                symb = parser.convertIntToStringBits(symbol_addres);
+                instruction = std::bitset<16>(symbolsTable.getAddress(symbol)).to_string();
+            }
+            else if (parser.isNumber(symbol))
+            {
+                instruction = std::bitset<16>(std::stoi(symbol)).to_string();
             }
             else
             {
-                symbol_addres = symbolsTables.getNextAddress();
-                symbolsTables.addEntry(symb, symbol_addres);
-                symb = parser.convertIntToStringBits(symbol_addres);
+                // if the table does not contain the symbol then we need to add it
+                symbolsTable.addEntry(symbol, symbolsTable.getNextAddress());
+                instruction = std::bitset<16>(symbolsTable.getAddress(symbol)).to_string();
             }
-
-            //std::cout << symb << std::endl;
-            parser.padWithZeros(symb, instruction);
+        }
+        else if (parser.commandType() == parser.C_COMMAND)
+        {
+            std::string dest = parser.dest();
+            std::string comp = parser.comp();
+            std::string jump = parser.jump();
+            instruction = "111" + codeTable.comp(comp) + codeTable.dest(dest) + codeTable.jump(jump);
         }
         outputFile << instruction << std::endl;
+        instruction = "";
     }
-    outputFile.close();
-    parser.closeFile();
+
     return 0;
 }
