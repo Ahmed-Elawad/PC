@@ -32,14 +32,22 @@
  * PUSH const 7 => @7 D=A, @CONSTANT A=M, M=D => binary instructions...
  */
 
+#include <fstream>
+#include <iostream>
 #include <string>
+#include <bitset>
+
+#include <string>
+#include "Parser.cpp"
+#include "CodeWriter.cpp"
 
 int main(int argc, char **argv) {
-  // initialize the parser
-  // generate the output file
-  // define the memory segment commands in asm
-  // for each jack command generate the corresponding asm instructions
-    // insert the lines at the end of the output file
+    std::string fileName = argv[1];
+    std::string outputFileName = fileName.substr(0, fileName.find(".vm")) + ".asm";
+    std::fstream outputFile{outputFileName, std::ios::out};
+
+    Parser parser{fileName};
+
 
   return 0;
 }
