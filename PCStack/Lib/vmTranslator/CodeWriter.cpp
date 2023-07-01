@@ -96,6 +96,20 @@ public:
 
     void writeNeg()
     {
+        writeDecrementSP();
+        writeSymbol("SP");
+        writeOp("A", "M");
+        writeOp("D", "M");
+
+        // write into D negated A
+        writeOp("D", "!D");
+
+        // load d into RAM[sp]
+        writeSymbol("SP");
+        writeOp("A", "M");
+        writeOp("M", "D");
+        
+        writeIncrementSP();
     }
 
     void writeEq()
