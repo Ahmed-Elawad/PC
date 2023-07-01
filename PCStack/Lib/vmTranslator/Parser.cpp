@@ -38,6 +38,10 @@ public:
 
     CommandType commandTyoe()
     {
+        std::string arg1val = arg1();
+        if (arg1val == "PUSH") return  CommandType::C_PUSH;
+        if (arg1val == "POP") return  CommandType::C_POP;
+        if (arg1val == "add" || arg1val == "sub" || arg1val == "neg" || arg1val == "eq" || arg1val == "lt" || arg1val == "gt" || arg1val == "and" || arg1val == "not" ) return  CommandType::C_ARITHMATIC;
         return currentCommandType;
     }
 
@@ -59,10 +63,6 @@ public:
         currentCommand = line;
     }
 
-    void setCommandType()
-    {
-    }
-
     std::string arg1()
     {
         if (currentCommandType == CommandType::C_RETURN)
@@ -81,7 +81,6 @@ public:
         {
             return -1;
         }
-
 
         int fisrtSpace = currentCommand.find(' ');
         int secondSpace = currentCommand.find(' ', fisrtSpace);
