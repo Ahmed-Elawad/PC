@@ -10,8 +10,101 @@ public:
 
     void writeArithmatic(std::string command)
     {
+        if (command == "add")
+            writeAdd();
+        if (command == "sub")
+            writeSub();
+        if (command == "neg")
+            writeNeg();
+        if (command == "eq")
+            writeEq();
+        if (command == "lt")
+            writeEq();
     }
 
+    void writeAdd()
+    {
+        // go to the last position
+        writeDecrementSP();
+
+        // pop the stack value into RAM[TMP]
+        writeSymbol("SP");
+        writeOp("A", "M");
+        writeOp("D", "M");
+        writeSymbol("TMP");
+        writeOp("M", "D");
+
+        // decrement the stack pointer
+        writeDecrementSP();
+
+        // load the value of the stack pointer into D
+        writeSymbol("SP");
+        writeOp("A", "M");
+        writeOp("D", "M");
+
+        // load the temp value into A
+        writeSymbol("TMP");
+        writeOp("A", "M");
+
+        // set D = D + A
+        writeOp("D", "D+A");
+
+        // write the new value into the stack
+        writeSymbol("SP");
+        writeOp("A", "M");
+        writeOp("M", "D");
+
+        // increment to the next position
+        writeIncrementSP();
+    }
+
+    void writeSub()
+    {
+        // go to the last position
+        writeDecrementSP();
+
+        // pop the stack value into RAM[TMP]
+        writeSymbol("SP");
+        writeOp("A", "M");
+        writeOp("D", "M");
+        writeSymbol("TMP");
+        writeOp("M", "D");
+
+        // decrement the stack pointer
+        writeDecrementSP();
+
+        // load the value of the stack pointer into D
+        writeSymbol("SP");
+        writeOp("A", "M");
+        writeOp("D", "M");
+
+        // load the temp value into A
+        writeSymbol("TMP");
+        writeOp("A", "M");
+
+        // set D = D + A
+        writeOp("D", "D-A");
+
+        // write the new value into the stack
+        writeSymbol("SP");
+        writeOp("A", "M");
+        writeOp("M", "D");
+
+        // increment to the next position
+        writeIncrementSP();
+    }
+
+    void writeNeg()
+    {
+    }
+
+    void writeEq()
+    {
+    }
+
+    void writeLt()
+    {
+    }
 
     void writePushPop(CommandType commandType, std::string segment, int index)
     {
