@@ -28,9 +28,7 @@ public:
         writeDecrementSP();
 
         // pop the stack value into RAM[TMP]
-        writeSymbol("SP");
-        writeOp("A", "M");
-        writeOp("D", "M");
+        writePopStackIntoD();
         writeSymbol("TMP");
         writeOp("M", "D");
 
@@ -38,9 +36,7 @@ public:
         writeDecrementSP();
 
         // load the value of the stack pointer into D
-        writeSymbol("SP");
-        writeOp("A", "M");
-        writeOp("D", "M");
+        writePopStackIntoD();
 
         // load the temp value into A
         writeSymbol("TMP");
@@ -64,9 +60,7 @@ public:
         writeDecrementSP();
 
         // pop the stack value into RAM[TMP]
-        writeSymbol("SP");
-        writeOp("A", "M");
-        writeOp("D", "M");
+        writePopStackIntoD();
         writeSymbol("TMP");
         writeOp("M", "D");
 
@@ -74,9 +68,7 @@ public:
         writeDecrementSP();
 
         // load the value of the stack pointer into D
-        writeSymbol("SP");
-        writeOp("A", "M");
-        writeOp("D", "M");
+        writePopStackIntoD();
 
         // load the temp value into A
         writeSymbol("TMP");
@@ -97,9 +89,7 @@ public:
     void writeNeg()
     {
         writeDecrementSP();
-        writeSymbol("SP");
-        writeOp("A", "M");
-        writeOp("D", "M");
+        writePopStackIntoD();
 
         // write into D negated A
         writeOp("D", "!D");
@@ -108,7 +98,7 @@ public:
         writeSymbol("SP");
         writeOp("A", "M");
         writeOp("M", "D");
-        
+
         writeIncrementSP();
     }
 
@@ -162,6 +152,13 @@ public:
         writeOp("D", "D-1");
         writeSymbol("SP");
         writeOp("M", "D");
+    }
+
+    void writePopStackIntoD()
+    {
+        writeSymbol("SP");
+        writeOp("A", "M");
+        writeOp("D", "M");
     }
 
     void close()
