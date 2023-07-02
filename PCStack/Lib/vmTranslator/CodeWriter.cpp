@@ -19,7 +19,7 @@ public:
         if (command == "eq")
             writeEq();
         if (command == "lt")
-            writeEq();
+            writeLt();
     }
 
     void writeAdd()
@@ -56,6 +56,7 @@ public:
 
     void writeSub()
     {
+        outputFile << "// START writeSub" << std::endl;
         // go to the last position
         writeDecrementSP();
 
@@ -84,6 +85,7 @@ public:
 
         // increment to the next position
         writeIncrementSP();
+        outputFile << "// END writeSub" << std::endl;
     }
 
     void writeNeg()
@@ -143,12 +145,15 @@ public:
         writePopStackIntoD();
 
         // write jump conditions
+        outputFile << "// if result > 0; set RAM[SP] to true" << std::endl;
         writeSymbol("SETTRUE");
-        writeJump("D", "JLT");
+        writeJump("D", "JGT");
 
+        outputFile << "// if result is anything else; set RAM[SP] to false" << std::endl;
         writeSymbol("SETFALSE");
         writeJump("0", "JMP");
 
+        outputFile << "// function setting RAM[SP] true" << std::endl;
         // define a jump point
         outputFile << "(SETTRUE)" << std::endl;
         // Write the jump point logic: set RAM[SP] = true(1)
@@ -158,6 +163,7 @@ public:
         writeSymbol("END");
         writeJump("0", "JMP");
 
+        outputFile << "// function setting RAM[SP] false" << std::endl;
         // define a jump point
         outputFile << "(SETFALSE)" << std::endl;
         // Write the jump point logic: set RAM[SP] = true(1)

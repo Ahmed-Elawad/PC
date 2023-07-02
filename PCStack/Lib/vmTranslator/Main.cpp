@@ -51,7 +51,7 @@ int main(int argc, char **argv)
 
   // new comment
   writer.writeInitLogic();
-  writer.writeArithmatic("eq");
+  writer.writeArithmatic("lt");
   writer.writeEndLoop();
 
   return 0;
