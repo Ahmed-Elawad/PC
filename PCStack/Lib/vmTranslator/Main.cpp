@@ -50,7 +50,8 @@ int main(int argc, char **argv)
   CodeWriter writer{outputFileName};
 
   // new comment
-  writer.writeArithmatic("sub");
+  writer.writeInitLogic();
+  writer.writeArithmatic("eq");
   writer.writeEndLoop();
 
   return 0;

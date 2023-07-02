@@ -104,6 +104,35 @@ public:
 
     void writeEq()
     {
+        writeSub();
+        writeDecrementSP();
+        // load sp value into D
+        writePopStackIntoD();
+        
+        // write jump conditions
+        writeSymbol("SETTRUE");
+        writeJump("D", "JEQ");
+
+        writeSymbol("SETFALSE");
+        writeJump("D", "JNE");
+
+        // define a jump point
+        outputFile << "(SETTRUE)" << std::endl;
+        // Write the jump point logic: set RAM[SP] = true(1)
+        writeSymbol("SP");
+        writeOp("A", "M");
+        writeOp("M", "1");
+        writeSymbol("END");
+        writeJump("0", "JMP");
+
+        // define a jump point
+        outputFile << "(SETFALSE)" << std::endl;
+        // Write the jump point logic: set RAM[SP] = true(1)
+        writeSymbol("SP");
+        writeOp("A", "M");
+        writeOp("M", "0");
+        writeSymbol("END");
+        writeJump("0", "JMP");
     }
 
     void writeLt()
@@ -130,8 +159,14 @@ public:
         lineCount++;
     }
 
+    void writeJump(std::string comp, std::string jmp) {
+        outputFile << comp + ";" + jmp << std::endl;
+        lineCount++;
+    }
+
     void writeEndLoop()
     {
+        outputFile << "(END)" << std::endl;
         outputFile << "@" << lineCount << std::endl;
         outputFile << "0;JMP" << std::endl;
     }
@@ -147,8 +182,15 @@ public:
 
     void writeDecrementSP()
     {
+        // write 0 into the current stack value
+        // write the new value into the stack
+        // writeSymbol("SP");
+        // writeOp("A", "M");
+        // writeOp("M", "0");
+
         writeSymbol("SP");
         writeOp("D", "M");
+        
         writeOp("D", "D-1");
         writeSymbol("SP");
         writeOp("M", "D");
@@ -159,6 +201,20 @@ public:
         writeSymbol("SP");
         writeOp("A", "M");
         writeOp("D", "M");
+    }
+
+    void writeLoadDtoTMP() {
+        writeSymbol("TMP");
+        writeOp("M", "D");
+    }
+
+    void writeInitLogic() {
+        // set SP to target test position
+        writeSymbol("258");
+        writeOp("D", "A");
+        writeSymbol("SP");
+        writeOp("M", "D");
+        
     }
 
     void close()
