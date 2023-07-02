@@ -20,6 +20,8 @@ public:
             writeEq();
         if (command == "lt")
             writeLt();
+        if (command == "gt")
+            writeGt();
     }
 
     void writeAdd()
@@ -173,6 +175,43 @@ public:
         writeSymbol("END");
         writeJump("0", "JMP");
     }
+
+    void writeGt() {
+          writeSub();
+        writeDecrementSP();
+        // load sp value into D
+        writePopStackIntoD();
+
+        // write jump conditions
+        outputFile << "// if result > 0; set RAM[SP] to true" << std::endl;
+        writeSymbol("SETTRUE");
+        writeJump("D", "JLT");
+
+        outputFile << "// if result is anything else; set RAM[SP] to false" << std::endl;
+        writeSymbol("SETFALSE");
+        writeJump("0", "JMP");
+
+        outputFile << "// function setting RAM[SP] true" << std::endl;
+        // define a jump point
+        outputFile << "(SETTRUE)" << std::endl;
+        // Write the jump point logic: set RAM[SP] = true(1)
+        writeSymbol("SP");
+        writeOp("A", "M");
+        writeOp("M", "1");
+        writeSymbol("END");
+        writeJump("0", "JMP");
+
+        outputFile << "// function setting RAM[SP] false" << std::endl;
+        // define a jump point
+        outputFile << "(SETFALSE)" << std::endl;
+        // Write the jump point logic: set RAM[SP] = true(1)
+        writeSymbol("SP");
+        writeOp("A", "M");
+        writeOp("M", "0");
+        writeSymbol("END");
+        writeJump("0", "JMP");
+    }
+
 
     void writePushPop(CommandType commandType, std::string segment, int index)
     {
