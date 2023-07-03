@@ -1,5 +1,11 @@
 
-
+/*
+NOTE 1: 
+    Use some form of templating instead of functional operations. Having to extend a function later on will
+    be burdonsome if the arguments need to be modified.
+NOTE 2:
+    Really need to set the values read to 0 otherwise it's tough to debug. Probably how memory leaks occur too.
+*/
 class CodeWriter
 {
 public:
@@ -14,14 +20,16 @@ public:
             writeAdd();
         if (command == "sub")
             writeSub();
-        if (command == "neg")
-            writeNeg();
+        if (command == "not")
+            writeNot();
         if (command == "eq")
             writeEq();
         if (command == "lt")
             writeLt();
         if (command == "gt")
             writeGt();
+        if (command == "and")
+            writeAnd();
     }
 
     void writeAdd()
@@ -90,7 +98,7 @@ public:
         outputFile << "// END writeSub" << std::endl;
     }
 
-    void writeNeg()
+    void writeNot()
     {
         writeDecrementSP();
         writePopStackIntoD();
@@ -176,8 +184,9 @@ public:
         writeJump("0", "JMP");
     }
 
-    void writeGt() {
-          writeSub();
+    void writeGt()
+    {
+        writeSub();
         writeDecrementSP();
         // load sp value into D
         writePopStackIntoD();
@@ -212,6 +221,23 @@ public:
         writeJump("0", "JMP");
     }
 
+    void writeAnd() {
+        // verify both A and B are true: expect either 0 or 1 as states
+        writeAdd(); // should always result in 2 if both are true: 1 + 1 === 2 ✅, 0 + 1 === 2 ❌, 0 + 0 === 2 ❌
+        // push 2 to the stack(theres a better way but i want this done rn)
+        writeSymbol("SP");
+        writeOp("A", "M");
+        writeOp("M", "1");
+        writeIncrementSP();
+        writeSymbol("SP");
+        writeOp("A", "M");
+        writeOp("M", "1");
+        writeIncrementSP();
+        writeAdd(); // write some function in memory instead of the steps every single time
+
+        // now do equality check
+        writeEq();
+    }
 
     void writePushPop(CommandType commandType, std::string segment, int index)
     {
