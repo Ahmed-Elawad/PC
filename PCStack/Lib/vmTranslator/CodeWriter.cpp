@@ -1,6 +1,6 @@
 
 /*
-NOTE 1: 
+NOTE 1:
     Use some form of templating instead of functional operations. Having to extend a function later on will
     be burdonsome if the arguments need to be modified.
 NOTE 2:
@@ -20,8 +20,8 @@ public:
             writeAdd();
         if (command == "sub")
             writeSub();
-        if (command == "not")
-            writeNot();
+        if (command == "neg")
+            writeNeg();
         if (command == "eq")
             writeEq();
         if (command == "lt")
@@ -30,6 +30,10 @@ public:
             writeGt();
         if (command == "and")
             writeAnd();
+        if (command == "not")
+            writeNot();
+        if (command == "or")
+            writeOr();
     }
 
     void writeAdd()
@@ -98,13 +102,14 @@ public:
         outputFile << "// END writeSub" << std::endl;
     }
 
-    void writeNot()
+    void writeNeg()
     {
         writeDecrementSP();
         writePopStackIntoD();
 
         // write into D negated A
         writeOp("D", "!D");
+        writeOp("D", "D+1");
 
         // load d into RAM[sp]
         writeSymbol("SP");
@@ -221,7 +226,8 @@ public:
         writeJump("0", "JMP");
     }
 
-    void writeAnd() {
+    void writeAnd()
+    {
         // verify both A and B are true: expect either 0 or 1 as states
         writeAdd(); // should always result in 2 if both are true: 1 + 1 === 2 ✅, 0 + 1 === 2 ❌, 0 + 0 === 2 ❌
         // push 2 to the stack(theres a better way but i want this done rn)
@@ -237,6 +243,56 @@ public:
 
         // now do equality check
         writeEq();
+    }
+
+    void writeNot()
+    {
+
+        writeSymbol("SP");
+        writeOp("A", "M");
+        writeOp("M", "0");
+        writeIncrementSP();
+
+        // now do equality check
+        writeEq();
+    }
+
+    void writeOr()
+    {
+        // add the two values
+        writeAdd();
+        writeDecrementSP();
+        // pull result into d
+        writePopStackIntoD();
+
+        // set to true if d > 0;
+        writeSymbol("SETTRUE");
+        writeJump("D", "JGT");
+
+        // set false if it's >= 0
+        writeSymbol("SETFALSE");
+        writeJump("D", "JEQ");
+
+        writeSymbol("SETFALSE");
+        writeJump("D", "JLT");
+
+        // define a jump point
+        outputFile << "(SETTRUE)" << std::endl;
+        // Write the jump point logic: set RAM[SP] = true(1)
+        writeSymbol("SP");
+        writeOp("A", "M");
+        writeOp("M", "1");
+        writeSymbol("END");
+        writeJump("0", "JMP");
+
+        // define a jump point
+        outputFile << "(SETFALSE)" << std::endl;
+        // Write the jump point logic: set RAM[SP] = true(1)
+        writeSymbol("SP");
+        writeOp("A", "M");
+        writeOp("M", "0");
+        writeSymbol("END");
+        writeJump("0", "JMP");
     }
 
     void writePushPop(CommandType commandType, std::string segment, int index)
@@ -283,11 +339,6 @@ public:
 
     void writeDecrementSP()
     {
-        // write 0 into the current stack value
-        // write the new value into the stack
-        // writeSymbol("SP");
-        // writeOp("A", "M");
-        // writeOp("M", "0");
 
         writeSymbol("SP");
         writeOp("D", "M");
@@ -295,6 +346,13 @@ public:
         writeOp("D", "D-1");
         writeSymbol("SP");
         writeOp("M", "D");
+
+        // write 0 into the current stack value
+        // write the new value into the stack
+        writeSymbol("SP");
+        writeOp("A", "M");
+        writeOp("A", "A+1");
+        writeOp("M", "0");
     }
 
     void writePopStackIntoD()
@@ -312,6 +370,17 @@ public:
 
     void writeInitLogic()
     {
+        
+        // load value into RAM pos
+        writeSymbol("10");
+        writeOp("D", "A");
+        writeSymbol("256");
+        writeOp("M", "D");
+        writeSymbol("20");
+        writeOp("D", "A");
+        writeSymbol("257");
+        writeOp("M", "D");
+        
         // set SP to target test position
         writeSymbol("258");
         writeOp("D", "A");

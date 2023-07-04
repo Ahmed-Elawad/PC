@@ -41,7 +41,6 @@
 #include "Parser.cpp"
 #include "CodeWriter.cpp"
 
-
 int main(int argc, char **argv)
 {
   std::string fileName = argv[1];
@@ -51,7 +50,7 @@ int main(int argc, char **argv)
 
   // new comment
   writer.writeInitLogic();
-  writer.writeArithmatic("and");
+  writer.writeArithmatic("neg");
   writer.writeEndLoop();
 
   return 0;
